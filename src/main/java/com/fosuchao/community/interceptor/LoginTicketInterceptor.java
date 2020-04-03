@@ -7,7 +7,6 @@ import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.CookieUtil;
 import com.fosuchao.community.utils.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

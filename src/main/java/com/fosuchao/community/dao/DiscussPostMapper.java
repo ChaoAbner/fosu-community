@@ -16,4 +16,13 @@ public interface DiscussPostMapper {
 
     // 查询post的总行数
     int selectDiscussPostsRows(@Param("userId") int userId);
+
+    // 插入post
+    void insertDiscussPost(DiscussPost post);
+
+    // 查询post
+    DiscussPost selectDiscussPostById(@Param("id") int id);
+
+    // 更新评论数
+    int updateCommentCount(@Param("id") int id, @Param("commentCount") int commentCount);
 }

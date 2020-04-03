@@ -5,6 +5,7 @@ import com.fosuchao.community.entity.LoginTicket;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.CommunityUtil;
+import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.MailUtil;
 import com.google.code.kaptcha.Producer;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +45,9 @@ public class LoginController implements CommunityConstant{
 
     @Autowired
     private Producer kaptchaProducer;
+
+    @Autowired
+    private HostHolder hostHolder;
 
     @GetMapping(path = "/login")
     public String loginPage() {
@@ -142,8 +146,10 @@ public class LoginController implements CommunityConstant{
     }
 
     @GetMapping(path = "/logout")
-    public String logout(@CookieValue("ticket") String ticket) {
+    public String logout(@CookieValue("ticket") String ticket, Model model) {
+        hostHolder.clear();
         userService.logout(ticket);
+        model.addAttribute("loginUser", null);
         return "redirect:/login";
     }
 
