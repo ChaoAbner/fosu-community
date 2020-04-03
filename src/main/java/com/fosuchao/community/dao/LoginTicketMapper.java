@@ -28,12 +28,12 @@ public interface LoginTicketMapper {
     // 更新状态status
     @Update({
             "<script>",
-            "update status set status = #{status} where ticket=#{ticket}",
+            "update login_ticket set status = #{status} where ticket=#{ticket}",
             "<if test=\"ticket!=null\">",
             "and 1=1",
             "</if>",
             "</script>"
     })
-    LoginTicket updateStatus(String ticket, int status);
+    void updateStatus(@Param("ticket") String ticket, @Param("status") int status);
 
 }

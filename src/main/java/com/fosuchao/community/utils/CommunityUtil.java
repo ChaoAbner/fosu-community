@@ -1,6 +1,7 @@
 package com.fosuchao.community.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import java.util.UUID;

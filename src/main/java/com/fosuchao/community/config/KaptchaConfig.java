@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Properties;
 
 /**
- * @description:
+ * @description: 验证码配置
  * @author: Joker Ye
  * @create: 2020/4/2 21:10
  */

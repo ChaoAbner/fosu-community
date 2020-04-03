@@ -12,11 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @description: 登录态拦截器，判断ticket是否有效
@@ -45,10 +43,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 // 查找并设置当前用户
                 User user = userService.selectById(currTicket.getUserId());
                 hostHolder.setUser(user);
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -56,7 +53,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                            Object handler, ModelAndView modelAndView) throws Exception {
         User user = hostHolder.getUser();
         // 在模板中设置持有用户
-        if (user != null) {
+        if (user != null && modelAndView != null) {
             modelAndView.addObject("loginUser", user);
         }
     }
