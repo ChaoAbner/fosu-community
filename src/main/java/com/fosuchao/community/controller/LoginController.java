@@ -4,14 +4,13 @@ import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.LoginTicket;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.UserService;
-import com.fosuchao.community.utils.CommunityUtil;
-import com.fosuchao.community.utils.HostHolder;
-import com.fosuchao.community.utils.MailUtil;
+import com.fosuchao.community.utils.*;
 import com.google.code.kaptcha.Producer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -47,6 +48,9 @@ public class LoginController implements CommunityConstant{
     private Producer kaptchaProducer;
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private HostHolder hostHolder;
 
     @GetMapping(path = "/login")
@@ -61,8 +65,16 @@ public class LoginController implements CommunityConstant{
 
     @PostMapping(path = "/login")
     public String login(String username, String password, boolean rememberme, String code,
-                        HttpServletResponse response, HttpSession session, Model model) {
-        String kaptcha = (String) session.getAttribute("kaptcha");
+                        HttpServletResponse response, /*HttpSession session, */
+                        @CookieValue("kaptchaOwner") String kaptchaOwner, Model model) {
+
+//        String kaptcha = (String) session.getAttribute("kaptcha");    === 废弃
+        String kaptcha = null;
+        if (!StringUtils.isBlank(kaptchaOwner)) {
+            String key = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
+            kaptcha = (String) redisTemplate.opsForValue().get(key);
+        }
+
         // 比较验证码
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
             model.addAttribute("codeMsg", "验证码不正确!");
@@ -103,6 +115,7 @@ public class LoginController implements CommunityConstant{
         }
     }
 
+    // http://localhost:8080/community/activation/101/code
     @GetMapping(path = "/activation/{userId}/{code}")
     public String activation(Model model, @PathVariable("userId") int userId, @PathVariable("code") String code) {
 
@@ -132,8 +145,19 @@ public class LoginController implements CommunityConstant{
         String text = kaptchaProducer.createText();
         // 生成图片
         BufferedImage image = kaptchaProducer.createImage(text);
-        // 将验证码存入session
-        session.setAttribute("kaptcha", text);
+
+        // 将验证码存入session ==== 弃用
+        // session.setAttribute("kaptcha", text);
+
+        // 优化方案：采用redis保存验证码
+        String owner = CommunityUtil.uuid();
+        // 设置cookie
+        Cookie cookie = new Cookie("kaptchaOwner", owner);
+        cookie.setMaxAge(60);
+        response.addCookie(cookie);
+        // 保存验证码
+        String kaptchaKey = RedisKeyUtil.getKaptchaKey(owner);
+        redisTemplate.opsForValue().set(kaptchaKey, text, 60, TimeUnit.SECONDS);
         // 将图片传给浏览器
         response.setContentType("image/png");
 
@@ -145,11 +169,16 @@ public class LoginController implements CommunityConstant{
         }
     }
 
+    /**
+     * 退出登录
+     * @Param [ticket]
+     * @return java.lang.String
+     */
     @GetMapping(path = "/logout")
-    public String logout(@CookieValue("ticket") String ticket, Model model) {
-        hostHolder.clear();
-        userService.logout(ticket);
-        model.addAttribute("loginUser", null);
+    public String logout(@CookieValue("ticket") String ticket) {
+        if (!StringUtils.isBlank(ticket)) {
+            userService.logout(ticket);
+        }
         return "redirect:/login";
     }
 

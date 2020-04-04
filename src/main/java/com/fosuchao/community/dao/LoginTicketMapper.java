@@ -27,12 +27,7 @@ public interface LoginTicketMapper {
 
     // 更新状态status
     @Update({
-            "<script>",
-            "update login_ticket set status = #{status} where ticket=#{ticket}",
-            "<if test=\"ticket!=null\">",
-            "and 1=1",
-            "</if>",
-            "</script>"
+            "update login_ticket set status = #{status} where ticket=#{ticket}"
     })
     void updateStatus(@Param("ticket") String ticket, @Param("status") int status);
 

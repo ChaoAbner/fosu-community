@@ -1,16 +1,17 @@
 package com.fosuchao.community.controller;
 
+import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.DiscussPost;
 import com.fosuchao.community.entity.Page;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.DiscussPostService;
+import com.fosuchao.community.service.LikeService;
 import com.fosuchao.community.service.UserService;
+import com.fosuchao.community.utils.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,13 +25,16 @@ import java.util.Map;
  */
 
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private DiscussPostService discussPostService;
+
+    @Autowired
+    private LikeService likeService;
 
     @GetMapping(path = "/")
     public String root() {
@@ -51,8 +55,10 @@ public class HomeController {
             for (DiscussPost post : list) {
                 Map<String, Object> map = new HashMap<>();
                 User user = userService.selectById(post.getUserId());
+                long likeCount = likeService.getEntityLikeCount(COMMENT_ENTITY, post.getId());
                 map.put("user", user);
                 map.put("post", post);
+                map.put("likeCount", likeCount);
                 discussPosts.add(map);
             }
         }
@@ -63,11 +69,11 @@ public class HomeController {
 
     @GetMapping(path = "error404")
     public String error404() {
-        return "/site/error/404";
+        return "/error/404";
     }
 
-    @GetMapping(path = "error500")
+    @GetMapping(path = "error")
     public String error500() {
-        return "/site/error/500";
+        return "/error/500";
     }
 }

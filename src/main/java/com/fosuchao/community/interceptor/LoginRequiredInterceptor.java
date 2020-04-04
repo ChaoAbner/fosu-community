@@ -9,7 +9,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -31,6 +30,7 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
             LoginRequired annotation = method.getAnnotation(LoginRequired.class);
+            // 需要登录注解但是用户没有登录
             if (annotation != null && hostHolder.getUser() == null) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return false;

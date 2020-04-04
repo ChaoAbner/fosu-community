@@ -6,7 +6,10 @@ import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.CookieUtil;
 import com.fosuchao.community.utils.HostHolder;
+import com.fosuchao.community.utils.RedisKeyUtil;
+import io.lettuce.core.RedisURI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,17 +33,20 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Autowired
     UserService userService;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws Exception {
         String ticket = CookieUtil.getValue("ticket", request);
         if (ticket != null) {
             // 查询凭证
-            LoginTicket currTicket = userService.selectByTicket(ticket);
+            LoginTicket loginTicket = userService.selectByTicket(ticket);
             // 验证凭证
-            if (currTicket != null && currTicket.getExpired().after(new Date()) && currTicket.getStatus() == 0) {
+            if (loginTicket != null && loginTicket.getExpired().after(new Date()) && loginTicket.getStatus() == 0) {
                 // 查找并设置当前用户
-                User user = userService.selectById(currTicket.getUserId());
+                User user = userService.selectById(loginTicket.getUserId());
                 hostHolder.setUser(user);
             }
         }
