@@ -1,6 +1,9 @@
 package com.fosuchao.community.controller;
 
+import com.fosuchao.community.constant.CommunityConstant;
+import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.User;
+import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.service.LikeService;
 import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.JsonResponseUtil;
@@ -19,7 +22,7 @@ import java.util.Map;
  */
 
 @Controller
-public class LikeController {
+public class LikeController implements CommunityConstant {
 
     @Autowired
     LikeService likeService;
@@ -27,9 +30,12 @@ public class LikeController {
     @Autowired
     HostHolder hostHolder;
 
+    @Autowired
+    EventProducer eventProducer;
+
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType, int entityId, int entityUserId) {
+    public String like(int entityType, int entityId, int entityUserId, int postId) {
         User user = hostHolder.getUser();
 
         // 点赞
@@ -43,6 +49,21 @@ public class LikeController {
         Map<String, Object> map = new HashMap<>();
         map.put("likeCount", likeCount);
         map.put("likeStatus", likeStatus);
+
+
+        // 判断点赞状态来触发点赞事件
+        if (likeStatus == 1) {
+            // 构建event对象
+            Event event = new Event();
+            event.setTopic(LIKE_TOPIC)
+                    .setEntityId(entityId)
+                    .setEntityType(entityType)
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityUserId(entityUserId)
+                    .setData("postId", postId);
+            eventProducer.fireEvent(event);
+        }
+
 
         return JsonResponseUtil.getJsonResponse(0, null, map);
     }

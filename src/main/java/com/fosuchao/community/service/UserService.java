@@ -3,8 +3,10 @@ package com.fosuchao.community.service;
 import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.dao.LoginTicketMapper;
 import com.fosuchao.community.dao.UserMapper;
+import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.LoginTicket;
 import com.fosuchao.community.entity.User;
+import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.utils.CommunityUtil;
 import com.fosuchao.community.utils.MailUtil;
 import com.fosuchao.community.utils.RedisKeyUtil;
@@ -12,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.MailAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -43,6 +44,9 @@ public class UserService implements CommunityConstant{
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     @Autowired
     private MailUtil mailUtil;
@@ -139,11 +143,20 @@ public class UserService implements CommunityConstant{
                 append(user.getId()).append("/").append(user.getActivationCode());
 
         Context context = new Context();
+        // TODO 模板设置username
         context.setVariable("username", user.getUsername());
         context.setVariable("url", url.toString());
 
         String content = templateEngine.process("mail/activation", context);
-        mailUtil.sendMail(user.getEmail(), "激活账号", content);
+        // 异步队列发送邮件
+        Event event = new Event();
+        event.setTopic(EMIAL_TOPIC);
+        event.setData("email", user.getEmail());
+        event.setData("subject", "激活账号");
+        event.setData("content", content);
+        eventProducer.fireEvent(event);
+
+//        mailUtil.sendMail(user.getEmail(), "激活账号", content);
 
         return map;
     }

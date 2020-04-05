@@ -32,4 +32,8 @@ public class CommentService {
     public void insertComment(Comment comment) {
         commentMapper.insertComment(comment);
     }
+
+    public Comment selectById(int id) {
+        return commentMapper.selectById(id);
+    }
 }

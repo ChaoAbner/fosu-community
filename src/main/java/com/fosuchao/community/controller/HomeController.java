@@ -6,7 +6,9 @@ import com.fosuchao.community.entity.Page;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.DiscussPostService;
 import com.fosuchao.community.service.LikeService;
+import com.fosuchao.community.service.MessageService;
 import com.fosuchao.community.service.UserService;
+import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,12 @@ public class HomeController implements CommunityConstant {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    HostHolder hostHolder;
 
     @GetMapping(path = "/")
     public String root() {

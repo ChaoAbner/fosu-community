@@ -1,10 +1,15 @@
 package com.fosuchao.community.controller;
 
+import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.Comment;
+import com.fosuchao.community.entity.DiscussPost;
+import com.fosuchao.community.entity.Event;
+import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.service.CommentService;
 import com.fosuchao.community.service.DiscussPostService;
 import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +26,7 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("/comment")
-public class CommentController {
+public class CommentController implements CommunityConstant {
 
     @Autowired
     CommentService commentService;
@@ -35,6 +40,9 @@ public class CommentController {
     @Autowired
     SensitiveFilterUtil sensitiveFilterUtil;
 
+    @Autowired
+    EventProducer eventProducer;
+
     @PostMapping("/add/{postId}")
     public String addComment(@PathVariable("postId") int postId, Comment comment) {
         comment.setUserId(hostHolder.getUser().getId());
@@ -47,6 +55,27 @@ public class CommentController {
         // 更新帖子评论数量
         discussPostService.updateCommentCount(
                 postId, discussPostService.selectDiscussPostById(postId).getCommentCount() + 1);
+
+        // 触发评论事件
+        // 构建event对象
+        Event event = new Event();
+        event.setTopic(COMMENT_TOPIC)
+                .setEntityId(comment.getId())
+                .setEntityType(comment.getEntityType())
+                .setUserId(hostHolder.getUser().getId())
+                .setData("postId", postId);
+
+        if (comment.getEntityType() == COMMENT_ENTITY) {
+            // 帖子评论
+            DiscussPost post = discussPostService.selectDiscussPostById(postId);
+            event.setEntityUserId(post.getUserId());
+        } else if (comment.getEntityType() == REPLY_ENTITY) {
+            // 回复
+            Comment reply = commentService.selectById(comment.getEntityId());
+            event.setEntityUserId(reply.getUserId());
+        }
+
+        eventProducer.fireEvent(event);
 
         return "redirect:/discuss/detail/" + postId;
     }
