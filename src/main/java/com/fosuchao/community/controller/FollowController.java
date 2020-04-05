@@ -42,6 +42,11 @@ public class FollowController implements CommunityConstant {
     @Autowired
     EventProducer eventProducer;
 
+    /**
+     * TODO: 权限控制
+     * @Param [entityType, entityId]
+     * @return java.lang.String
+     */
     @PostMapping("/follow")
     @ResponseBody
     public String follow(int entityType, int entityId) {

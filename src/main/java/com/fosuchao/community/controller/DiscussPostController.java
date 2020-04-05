@@ -47,11 +47,8 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     HostHolder hostHolder;
 
-    @Autowired
-    SensitiveFilterUtil sensitiveFilterUtil;
-
     /**
-     * 添加文章
+     * 添加文章 TODO: 权限控制
      * @return java.lang.String
      * @Param [title, content]
      */
@@ -71,8 +68,7 @@ public class DiscussPostController implements CommunityConstant {
         post.setCreateTime(new Date());
         post.setUserId(user.getId());
         post.setTitle(title);
-        post.setContent(HtmlUtils.htmlEscape(content));
-        post.setContent(sensitiveFilterUtil.filter(post.getContent()));
+        post.setContent(content);
         // 插入文章
         discussPostService.insertDiscussPost(post);
 
@@ -99,7 +95,7 @@ public class DiscussPostController implements CommunityConstant {
         long entityLikeCount = likeService.getEntityLikeCount(COMMENT_ENTITY, post.getId());
         model.addAttribute("likeCount", entityLikeCount);
 
-        // 点赞状态
+        // 点赞状态, 没有登录的人是无法查看状态的！
         int entityLikeStatus = hostHolder.getUser() == null ? 0 : likeService.getEntityLikeStatus(
                 COMMENT_ENTITY, post.getId(), hostHolder.getUser().getId());
         model.addAttribute("likeStatus", entityLikeStatus);
@@ -115,6 +111,7 @@ public class DiscussPostController implements CommunityConstant {
         // 评论VO列表
         ArrayList<Map<String, Object>> commentVoList = new ArrayList<>();
         if (comments != null) {
+            User curUser = hostHolder.getUser();
             for (Comment comment : comments) {
                 Map<String, Object> commentVo = new HashMap<>();
                 commentVo.put("comment", comment);
@@ -123,8 +120,8 @@ public class DiscussPostController implements CommunityConstant {
                 // 评论点赞数
                 long commentLikeCount = likeService.getEntityLikeCount(REPLY_ENTITY, comment.getId());
                 commentVo.put("likeCount", commentLikeCount);
-                // 点赞状态
-                int commentLikeStatus = likeService.getEntityLikeStatus(
+                // 点赞状态, 没有登录的人是无法查看状态的！
+                int commentLikeStatus = curUser == null ? 0 : likeService.getEntityLikeStatus(
                         REPLY_ENTITY, comment.getId(), hostHolder.getUser().getId());
                 commentVo.put("likeStatus", commentLikeStatus);
                 // 回复列表
@@ -143,7 +140,7 @@ public class DiscussPostController implements CommunityConstant {
                         long replyLikeCount = likeService.getEntityLikeCount(REPLY_ENTITY, reply.getId());
                         replyVo.put("likeCount", replyLikeCount);
                         // 点赞状态
-                        int replyLikeStatus = likeService.getEntityLikeStatus(
+                        int replyLikeStatus = curUser == null ? 0 : likeService.getEntityLikeStatus(
                                 REPLY_ENTITY, reply.getId(), hostHolder.getUser().getId());
                         replyVo.put("likeStatus", replyLikeStatus);
                         // 回复的目标

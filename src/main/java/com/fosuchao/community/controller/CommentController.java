@@ -38,16 +38,16 @@ public class CommentController implements CommunityConstant {
     HostHolder hostHolder;
 
     @Autowired
-    SensitiveFilterUtil sensitiveFilterUtil;
-
-    @Autowired
     EventProducer eventProducer;
 
+    /**
+     * TODO: 权限控制
+     * @Param [postId, comment]
+     * @return java.lang.String
+     */
     @PostMapping("/add/{postId}")
     public String addComment(@PathVariable("postId") int postId, Comment comment) {
         comment.setUserId(hostHolder.getUser().getId());
-        comment.setContent(HtmlUtils.htmlEscape(comment.getContent()));
-        comment.setContent(sensitiveFilterUtil.filter(comment.getContent()));
         comment.setStatus(0);
         comment.setCreateTime(new Date());
 

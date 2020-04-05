@@ -33,11 +33,15 @@ public class LikeController implements CommunityConstant {
     @Autowired
     EventProducer eventProducer;
 
+    /**
+     * 点赞接口，TODO: 权限控制
+     * @Param [entityType, entityId, entityUserId, postId]
+     * @return java.lang.String
+     */
     @PostMapping("/like")
     @ResponseBody
     public String like(int entityType, int entityId, int entityUserId, int postId) {
         User user = hostHolder.getUser();
-
         // 点赞
         likeService.like(entityType, entityId, user.getId(), entityUserId);
 
