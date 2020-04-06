@@ -27,6 +27,10 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_USER = "user";
 
+    private static final String PREFIX_UV = "uv";
+
+    private static final String PREFIX_DAU = "dau";
+
 
     /**
      * 某个实体的赞
@@ -89,5 +93,41 @@ public class RedisKeyUtil {
      */
     public static String getUserKey(int userId) {
         return PREFIX_USER + SPLIT + userId;
+    }
+
+    /**
+     * 获取某天的uv的key
+     * @Param [date]
+     * @return java.lang.String
+     */
+    public static String getUvkey(String date) {
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    /**
+     * 获取几天范围内的uv的key
+     * @Param [date]
+     * @return java.lang.String
+     */
+    public static String getUvRangekey(String startDate, String endDate) {
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    /**
+     * 获取某天的DAU的key
+     * @Param [date]
+     * @return java.lang.String
+     */
+    public static String getDaukey(String date) {
+        return PREFIX_DAU + SPLIT + date;
+    }
+
+    /**
+     * 获取范围内的DAU的key
+     * @Param [date]
+     * @return java.lang.String
+     */
+    public static String getDauRangekey(String startDate, String endDate) {
+        return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
 }

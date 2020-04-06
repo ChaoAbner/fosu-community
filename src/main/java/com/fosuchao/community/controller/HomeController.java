@@ -75,12 +75,13 @@ public class HomeController implements CommunityConstant {
         return "/index";
     }
 
-    @GetMapping(path = "error404")
+    // 拒绝访问时的页面
+    @GetMapping(path = "/denied")
     public String error404() {
         return "/error/404";
     }
 
-    @GetMapping(path = "error")
+    @GetMapping(path = "/error")
     public String error500() {
         return "/error/500";
     }

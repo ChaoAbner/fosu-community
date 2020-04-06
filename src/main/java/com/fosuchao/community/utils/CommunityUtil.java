@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.http.HttpRequest;
 import java.util.UUID;
 
 /**
@@ -22,5 +24,13 @@ public class CommunityUtil {
             return null;
         }
         return DigestUtils.md5DigestAsHex(key.getBytes());
+    }
+
+    public static boolean isAjax(HttpServletRequest request) {
+        String xRequestedWith = request.getHeader("X-Requested-With");
+        if ("XMLHttpRequest".equals(xRequestedWith)) {
+            return true;
+        }
+        return false;
     }
 }

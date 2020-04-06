@@ -7,6 +7,7 @@ import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.service.CommentService;
 import com.fosuchao.community.service.DiscussPostService;
+import com.fosuchao.community.service.EventService;
 import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -38,7 +39,7 @@ public class CommentController implements CommunityConstant {
     HostHolder hostHolder;
 
     @Autowired
-    EventProducer eventProducer;
+    EventService eventService;
 
     /**
      * TODO: 权限控制
@@ -56,34 +57,22 @@ public class CommentController implements CommunityConstant {
         discussPostService.updateCommentCount(
                 postId, discussPostService.selectDiscussPostById(postId).getCommentCount() + 1);
 
-        // 触发评论事件
-        // 构建event对象
-        Event event = new Event();
-        event.setTopic(COMMENT_TOPIC)
-                .setEntityId(comment.getId())
-                .setEntityType(comment.getEntityType())
-                .setUserId(hostHolder.getUser().getId())
-                .setData("postId", postId);
-
+        int entityUserId = 0;
         if (comment.getEntityType() == POST_ENTITY) {
             // 帖子评论
             DiscussPost post = discussPostService.selectDiscussPostById(postId);
-            event.setEntityUserId(post.getUserId());
+            entityUserId = post.getUserId();
         } else if (comment.getEntityType() == REPLY_ENTITY) {
             // 回复
             Comment reply = commentService.selectById(comment.getEntityId());
-            event.setEntityUserId(reply.getUserId());
+            entityUserId = reply.getUserId();
         }
-        eventProducer.fireEvent(event);
+        // 触发评论事件
+        eventService.comment(comment, postId, entityUserId);
 
         if (comment.getEntityType() == POST_ENTITY) {
             // 触发发帖事件
-            Event e = new Event()
-                    .setTopic(PUBLISH_TOPIC)
-                    .setEntityType(POST_ENTITY)
-                    .setEntityId(postId)
-                    .setUserId(hostHolder.getUser().getId());
-            eventProducer.fireEvent(e);
+            eventService.publishPost(postId);
         }
 
         return "redirect:/discuss/detail/" + postId;

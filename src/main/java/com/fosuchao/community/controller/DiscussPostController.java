@@ -3,10 +3,7 @@ package com.fosuchao.community.controller;
 import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.*;
 import com.fosuchao.community.event.EventProducer;
-import com.fosuchao.community.service.CommentService;
-import com.fosuchao.community.service.DiscussPostService;
-import com.fosuchao.community.service.LikeService;
-import com.fosuchao.community.service.UserService;
+import com.fosuchao.community.service.*;
 import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.JsonResponseUtil;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
@@ -46,7 +43,7 @@ public class DiscussPostController implements CommunityConstant {
     HostHolder hostHolder;
 
     @Autowired
-    EventProducer eventProducer;
+    EventService eventService;
 
     /**
      * 添加文章 TODO: 权限控制
@@ -75,12 +72,7 @@ public class DiscussPostController implements CommunityConstant {
         discussPostService.insertDiscussPost(post);
 
         // 触发发帖事件
-        Event event = new Event()
-                .setTopic(PUBLISH_TOPIC)
-                .setEntityType(POST_ENTITY)
-                .setEntityId(post.getId())
-                .setUserId(post.getUserId());
-        eventProducer.fireEvent(event);
+        eventService.publishPost(post);
 
         return JsonResponseUtil.getJsonResponse(0, "发布成功!");
     }
@@ -174,4 +166,46 @@ public class DiscussPostController implements CommunityConstant {
         return "/site/discuss-detail";
     }
 
+    /**
+     * 置顶，type = 1
+     * @Param [id]
+     * @return java.lang.String
+     */
+    @PostMapping("/top")
+    @ResponseBody
+    public String setTop(int id) {
+        discussPostService.updatePostType(id, 1);
+
+        // 触发发帖事件
+        return JsonResponseUtil.getJsonResponse(0);
+    }
+
+    /**
+     * 加精，status = 1
+     * @Param [id]
+     * @return java.lang.String
+     */
+    @PostMapping("/wonderful")
+    @ResponseBody
+    public String setWonderful(int id) {
+        discussPostService.updatePostStatus(id, 1);
+
+        // 触发发帖事件
+        eventService.publishPost(discussPostService.selectDiscussPostById(id));
+        return JsonResponseUtil.getJsonResponse(0);
+    }
+
+    /**
+     * 删除/拉黑，status = 2
+     * @Param [id]
+     * @return java.lang.String
+     */
+    @PostMapping("/delete")
+    @ResponseBody
+    public String setDelete(int id) {
+        discussPostService.updatePostStatus(id, 2);
+        // 删帖事件
+        eventService.deletePost(discussPostService.selectDiscussPostById(id));
+        return JsonResponseUtil.getJsonResponse(0);
+    }
 }

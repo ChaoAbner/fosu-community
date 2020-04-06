@@ -54,7 +54,10 @@ public class LoginController implements CommunityConstant{
     private HostHolder hostHolder;
 
     @GetMapping(path = "/login")
-    public String loginPage() {
+    public String loginPage(HttpServletRequest request) {
+        if (hostHolder.getUser() != null) {
+            return "forward:/index";
+        }
         return "/site/login";
     }
 

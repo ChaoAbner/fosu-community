@@ -45,6 +45,16 @@ public class DiscussPostService {
         return discussPostMapper.updateCommentCount(id, commentCount);
     }
 
+    // 修改状态,加精，置顶，热帖等
+    public int updatePostStatus(int id, int status) {
+        return discussPostMapper.updatePostStatus(id, status);
+    }
+
+    // 修改文章type，删除等
+    public int updatePostType(int id, int type) {
+        return discussPostMapper.updatePostType(id, type);
+    }
+
     // 插入文章
     public void insertDiscussPost(DiscussPost post) {
         if (post == null) {

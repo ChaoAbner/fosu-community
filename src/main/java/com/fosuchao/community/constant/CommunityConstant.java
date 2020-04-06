@@ -30,7 +30,7 @@ public interface CommunityConstant {
     /**
      * 记住状态的登录凭证超时时间
      */
-    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 30;
+    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 7;
 
     /**
      * 实体类型：帖子
@@ -65,7 +65,7 @@ public interface CommunityConstant {
     /**
      * 主题：邮件
      */
-    String EMIAL_TOPIC = "email";
+    String EMAIL_TOPIC = "email";
 
     /**
      * 主题：帖子发布，修改
@@ -73,7 +73,29 @@ public interface CommunityConstant {
     String PUBLISH_TOPIC = "publish";
 
     /**
+     * 主题：帖子删除
+     */
+    String DELETE_TOPIC = "delete";
+
+    /**
      * 系统用户
      */
-    int SYSTEM_USER = 1;
+    int SYSTEM_USER_ID = 1;
+
+    /**
+     * 权限：普通用户
+     */
+    String AUTHORITY_USER = "user";
+
+    /**
+     * 权限：版主
+     */
+    String AUTHORITY_MODERATOR = "moderator";
+
+    /**
+     * 权限：管理员
+     */
+    String AUTHORITY_ADMIN = "admin";
+
+
 }

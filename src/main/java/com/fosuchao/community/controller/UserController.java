@@ -64,14 +64,12 @@ public class UserController implements CommunityConstant {
     private String domain;
 
     // 个人设置
-    @LoginRequired
     @GetMapping(path = "/setting")
     public String getSettingPage() {
         return "/site/setting";
     }
 
     // 上传头像接口
-    @LoginRequired
     @PostMapping(path = "/upload")
     public String uploadHeader(MultipartFile headerImage, Model model) {
         if (headerImage == null) {
@@ -89,11 +87,13 @@ public class UserController implements CommunityConstant {
         // 生成随机文件名
         fileName = CommunityUtil.uuid() + suffix;
 
+        File fileDir = new File(uploadPath);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
         // 图片存放位置
         File file = new File(uploadPath + "/" + fileName);
-        if (!file.exists()) {
-            file.mkdir();
-        }
+
         try {
             headerImage.transferTo(file);
         } catch (IOException e) {

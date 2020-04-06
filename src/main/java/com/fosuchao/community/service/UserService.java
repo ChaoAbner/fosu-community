@@ -14,14 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,14 +37,17 @@ public class UserService implements CommunityConstant{
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Autowired
-    private LoginTicketMapper loginTicketMapper;
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     private MailUtil mailUtil;
@@ -56,7 +57,6 @@ public class UserService implements CommunityConstant{
 
 
     public User selectById(int id) {
-//        return selectById(id);
         // 使用缓存
         User user = getUserFromCache(id);
         if (user == null) {
@@ -149,12 +149,13 @@ public class UserService implements CommunityConstant{
 
         String content = templateEngine.process("mail/activation", context);
         // 异步队列发送邮件
-        Event event = new Event();
-        event.setTopic(EMIAL_TOPIC);
-        event.setData("email", user.getEmail());
-        event.setData("subject", "激活账号");
-        event.setData("content", content);
-        eventProducer.fireEvent(event);
+//        Event event = new Event();
+//        event.setTopic(EMAIL_TOPIC);
+//        event.setData("email", user.getEmail());
+//        event.setData("subject", "激活账号");
+//        event.setData("content", content);
+//        eventProducer.fireEvent(event);
+        eventService.email(user.getEmail(), "激活账号", content);
 
 //        mailUtil.sendMail(user.getEmail(), "激活账号", content);
 
@@ -258,5 +259,23 @@ public class UserService implements CommunityConstant{
     public void clearUserCache(int userId) {
         String key = RedisKeyUtil.getUserKey(userId);
         redisTemplate.delete(key);
+    }
+
+    // 获取用户的身份
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
+        User user = this.selectById(userId);
+
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add((GrantedAuthority) () -> {
+            switch (user.getType()) {
+                case 1:
+                    return AUTHORITY_ADMIN;
+                case 2:
+                    return AUTHORITY_MODERATOR;
+                default:
+                    return AUTHORITY_USER;
+            }
+        });
+        return list;
     }
 }

@@ -64,7 +64,7 @@ public class EventConsumer implements CommunityConstant{
         Message message = new Message();
         message.setConversationId(event.getTopic());
         message.setToId(event.getEntityUserId());
-        message.setFromId(SYSTEM_USER);
+        message.setFromId(SYSTEM_USER_ID);
         message.setCreateTime(new Date());
 
         HashMap<String, Object> content = new HashMap<>();
@@ -80,7 +80,7 @@ public class EventConsumer implements CommunityConstant{
         messageService.insertLetter(message);
     }
 
-    @KafkaListener(topics = {EMIAL_TOPIC})
+    @KafkaListener(topics = {EMAIL_TOPIC})
     public void handlerEmailMessage(ConsumerRecord record) {
         if (!isValid(record))
             return ;
@@ -116,6 +116,23 @@ public class EventConsumer implements CommunityConstant{
             DiscussPost post = discussPostService.selectDiscussPostById(entityId);
             elasticsearchService.saveDicussPost(post);
         }
+    }
+
+    /**
+     * 删帖事件
+     * @Param [record]
+     * @return void
+     */
+    @KafkaListener(topics = {DELETE_TOPIC})
+    public void handlerPostDelete(ConsumerRecord record) {
+        if (!isValid(record))
+            return ;
+
+        Event event = parseToEvent(record);
+        if (event == null)
+            return ;
+        // 删除索引
+        elasticsearchService.deleteDiscussPost(event.getEntityId());
     }
 
     public boolean isValid(ConsumerRecord record) {

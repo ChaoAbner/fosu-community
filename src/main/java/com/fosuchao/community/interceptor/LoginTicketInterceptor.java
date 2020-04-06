@@ -1,15 +1,16 @@
 package com.fosuchao.community.interceptor;
 
-import com.fosuchao.community.dao.LoginTicketMapper;
 import com.fosuchao.community.entity.LoginTicket;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.CookieUtil;
 import com.fosuchao.community.utils.HostHolder;
-import com.fosuchao.community.utils.RedisKeyUtil;
-import io.lettuce.core.RedisURI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,6 +49,12 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 // 查找并设置当前用户
                 User user = userService.selectById(loginTicket.getUserId());
                 hostHolder.setUser(user);
+
+                // 构建用户认证的结果，并存入SecurityContext，便于security进行授权
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        user, user.getPassword(), userService.getAuthorities(user.getId()));
+
+                SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
             }
         }
         return true;
@@ -66,7 +73,9 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) throws Exception {
-        // 清除持有用户
+        // 请求结束，清除持有用户
         hostHolder.clear();
+        // 清除权限
+        SecurityContextHolder.clearContext();
     }
 }

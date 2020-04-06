@@ -5,6 +5,7 @@ import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.Page;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.event.EventProducer;
+import com.fosuchao.community.service.EventService;
 import com.fosuchao.community.service.FollowService;
 import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.HostHolder;
@@ -40,7 +41,7 @@ public class FollowController implements CommunityConstant {
     HostHolder hostHolder;
 
     @Autowired
-    EventProducer eventProducer;
+    EventService eventService;
 
     /**
      * TODO: 权限控制
@@ -53,13 +54,7 @@ public class FollowController implements CommunityConstant {
         followService.follow(entityType, entityId, hostHolder.getUser().getId());
 
         // 触发关注事件
-        Event event = new Event();
-        event.setTopic(FOLLOW_TOPIC)
-                .setEntityId(entityId)
-                .setEntityType(entityType)
-                .setUserId(hostHolder.getUser().getId())
-                .setEntityUserId(entityId);
-        eventProducer.fireEvent(event);
+        eventService.follow(entityId, entityType);
 
         return JsonResponseUtil.getJsonResponse(0, "已关注！");
     }
