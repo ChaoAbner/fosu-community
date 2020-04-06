@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.*;
 
 /**
  * 这里使用注解的方式来设置SQL，优点：方便， 缺点：可读性差
+ * 不建议在使用这个方法来保存登录凭证，已优化使用缓存方式。
  */
+@Deprecated
 @Mapper
 public interface LoginTicketMapper {
 

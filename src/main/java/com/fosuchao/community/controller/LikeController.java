@@ -54,7 +54,6 @@ public class LikeController implements CommunityConstant {
         map.put("likeCount", likeCount);
         map.put("likeStatus", likeStatus);
 
-
         // 判断点赞状态来触发点赞事件
         if (likeStatus == 1) {
             // 构建event对象
@@ -67,7 +66,6 @@ public class LikeController implements CommunityConstant {
                     .setData("postId", postId);
             eventProducer.fireEvent(event);
         }
-
 
         return JsonResponseUtil.getJsonResponse(0, null, map);
     }

@@ -91,7 +91,7 @@ public class MailUtil {
         session.setDebug(true);
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
-            mimeMessage.setFrom(new InternetAddress(account, "[fosu-community]"));  // 自定义发送名
+            mimeMessage.setFrom(new InternetAddress(account, "fosuhub"));  // 自定义发送名
             mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             mimeMessage.setSubject(subject);
             mimeMessage.setSentDate(new Date());

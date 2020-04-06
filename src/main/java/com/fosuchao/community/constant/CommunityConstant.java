@@ -35,7 +35,7 @@ public interface CommunityConstant {
     /**
      * 实体类型：帖子
      */
-    int COMMENT_ENTITY = 1;
+    int POST_ENTITY = 1;
 
     /**
      * 实体类型：回复
@@ -66,6 +66,11 @@ public interface CommunityConstant {
      * 主题：邮件
      */
     String EMIAL_TOPIC = "email";
+
+    /**
+     * 主题：帖子发布，修改
+     */
+    String PUBLISH_TOPIC = "publish";
 
     /**
      * 系统用户

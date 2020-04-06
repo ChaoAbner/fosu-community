@@ -65,7 +65,7 @@ public class CommentController implements CommunityConstant {
                 .setUserId(hostHolder.getUser().getId())
                 .setData("postId", postId);
 
-        if (comment.getEntityType() == COMMENT_ENTITY) {
+        if (comment.getEntityType() == POST_ENTITY) {
             // 帖子评论
             DiscussPost post = discussPostService.selectDiscussPostById(postId);
             event.setEntityUserId(post.getUserId());
@@ -74,8 +74,17 @@ public class CommentController implements CommunityConstant {
             Comment reply = commentService.selectById(comment.getEntityId());
             event.setEntityUserId(reply.getUserId());
         }
-
         eventProducer.fireEvent(event);
+
+        if (comment.getEntityType() == POST_ENTITY) {
+            // 触发发帖事件
+            Event e = new Event()
+                    .setTopic(PUBLISH_TOPIC)
+                    .setEntityType(POST_ENTITY)
+                    .setEntityId(postId)
+                    .setUserId(hostHolder.getUser().getId());
+            eventProducer.fireEvent(e);
+        }
 
         return "redirect:/discuss/detail/" + postId;
     }

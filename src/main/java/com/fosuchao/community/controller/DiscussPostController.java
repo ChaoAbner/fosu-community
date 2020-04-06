@@ -1,10 +1,8 @@
 package com.fosuchao.community.controller;
 
 import com.fosuchao.community.constant.CommunityConstant;
-import com.fosuchao.community.entity.Comment;
-import com.fosuchao.community.entity.DiscussPost;
-import com.fosuchao.community.entity.Page;
-import com.fosuchao.community.entity.User;
+import com.fosuchao.community.entity.*;
+import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.service.CommentService;
 import com.fosuchao.community.service.DiscussPostService;
 import com.fosuchao.community.service.LikeService;
@@ -47,6 +45,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     HostHolder hostHolder;
 
+    @Autowired
+    EventProducer eventProducer;
+
     /**
      * 添加文章 TODO: 权限控制
      * @return java.lang.String
@@ -69,8 +70,17 @@ public class DiscussPostController implements CommunityConstant {
         post.setUserId(user.getId());
         post.setTitle(title);
         post.setContent(content);
+        post.setScore(0.0);
         // 插入文章
         discussPostService.insertDiscussPost(post);
+
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(PUBLISH_TOPIC)
+                .setEntityType(POST_ENTITY)
+                .setEntityId(post.getId())
+                .setUserId(post.getUserId());
+        eventProducer.fireEvent(event);
 
         return JsonResponseUtil.getJsonResponse(0, "发布成功!");
     }
@@ -92,12 +102,12 @@ public class DiscussPostController implements CommunityConstant {
         model.addAttribute("user", user);
 
         // 帖子点赞数
-        long entityLikeCount = likeService.getEntityLikeCount(COMMENT_ENTITY, post.getId());
+        long entityLikeCount = likeService.getEntityLikeCount(POST_ENTITY, post.getId());
         model.addAttribute("likeCount", entityLikeCount);
 
         // 点赞状态, 没有登录的人是无法查看状态的！
         int entityLikeStatus = hostHolder.getUser() == null ? 0 : likeService.getEntityLikeStatus(
-                COMMENT_ENTITY, post.getId(), hostHolder.getUser().getId());
+                POST_ENTITY, post.getId(), hostHolder.getUser().getId());
         model.addAttribute("likeStatus", entityLikeStatus);
 
         // 评论分页信息
@@ -107,7 +117,7 @@ public class DiscussPostController implements CommunityConstant {
 
         // 查找评论，帖子评论，回复
         List<Comment> comments = commentService.selectCommentsByEntity(
-                COMMENT_ENTITY, post.getId(), page.getOffset(), page.getLimit());
+                POST_ENTITY, post.getId(), page.getOffset(), page.getLimit());
         // 评论VO列表
         ArrayList<Map<String, Object>> commentVoList = new ArrayList<>();
         if (comments != null) {

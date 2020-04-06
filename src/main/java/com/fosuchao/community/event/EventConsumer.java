@@ -2,8 +2,11 @@ package com.fosuchao.community.event;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fosuchao.community.constant.CommunityConstant;
+import com.fosuchao.community.entity.DiscussPost;
 import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.Message;
+import com.fosuchao.community.service.DiscussPostService;
+import com.fosuchao.community.service.ElasticsearchService;
 import com.fosuchao.community.service.MessageService;
 import com.fosuchao.community.utils.MailUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -35,6 +38,12 @@ public class EventConsumer implements CommunityConstant{
     TemplateEngine templateEngine;
 
     @Autowired
+    DiscussPostService discussPostService;
+
+    @Autowired
+    ElasticsearchService elasticsearchService;
+
+    @Autowired
     MailUtil mailUtil;
 
     /**
@@ -46,12 +55,11 @@ public class EventConsumer implements CommunityConstant{
     public void handleSocialMessage(ConsumerRecord record) {
         if (!isValid(record))
             return ;
-        // 将消息字符串转化成Event
-        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
-        if (event == null) {
-            logger.error("消息的格式错误");
+
+        Event event = parseToEvent(record);
+        if (event == null)
             return ;
-        }
+
         // 发送站内通知,将相应的数据插入message表
         Message message = new Message();
         message.setConversationId(event.getTopic());
@@ -76,17 +84,38 @@ public class EventConsumer implements CommunityConstant{
     public void handlerEmailMessage(ConsumerRecord record) {
         if (!isValid(record))
             return ;
-        // 将消息字符串转化成Event
-        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
-        if (event == null) {
-            logger.error("消息的格式错误");
+
+        Event event = parseToEvent(record);
+        if (event == null)
             return ;
-        }
+
         // 发送邮件
         String email = (String) event.getData().get("email");
         String subject = (String) event.getData().get("subject");
         String content = (String) event.getData().get("content");
         mailUtil.sendCompanyMail(email, subject, content);
+    }
+
+    /**
+     * 消费发/更新帖事件
+     * @Param [record]
+     * @return void
+     */
+    @KafkaListener(topics = {PUBLISH_TOPIC})
+    public void handlerPostSearchMessage(ConsumerRecord record) {
+        if (!isValid(record))
+            return ;
+
+        Event event = parseToEvent(record);
+        if (event == null)
+            return ;
+
+        // 重新建立索引
+        int entityId = event.getEntityId();
+        if (event.getEntityType() == POST_ENTITY) {
+            DiscussPost post = discussPostService.selectDiscussPostById(entityId);
+            elasticsearchService.saveDicussPost(post);
+        }
     }
 
     public boolean isValid(ConsumerRecord record) {
@@ -96,4 +125,14 @@ public class EventConsumer implements CommunityConstant{
         }
         return true;
     }
+
+    public Event parseToEvent(ConsumerRecord record) {
+        // 将消息字符串转化成Event
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息的格式错误");
+        }
+        return event;
+    }
+
 }

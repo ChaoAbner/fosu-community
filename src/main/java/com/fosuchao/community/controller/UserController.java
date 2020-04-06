@@ -183,7 +183,7 @@ public class UserController implements CommunityConstant {
                 User user = userService.selectById(post.getUserId());
                 map.put("user", user);
 
-                long likeCount = likeService.getEntityLikeCount(COMMENT_ENTITY, post.getId());
+                long likeCount = likeService.getEntityLikeCount(POST_ENTITY, post.getId());
                 map.put("likeCount", likeCount);
 
                 discussPosts.add(map);
