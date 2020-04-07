@@ -10,10 +10,12 @@ import com.fosuchao.community.service.MessageService;
 import com.fosuchao.community.service.UserService;
 import com.fosuchao.community.utils.HostHolder;
 import com.fosuchao.community.utils.RedisKeyUtil;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,13 +52,14 @@ public class HomeController implements CommunityConstant {
     }
 
     @GetMapping(path = "/index")
-    public String getIndexPage(Model model, Page page) {
+    public String getIndexPage(Model model, Page page,
+                               @RequestParam(name = "orderMode", defaultValue = "0") int orderMode) {
 
         page.setRows(discussPostService.selectDiscussPostsRows(0));
-        page.setPath("/index");
+        page.setPath("/index?orderMode=" + orderMode);
 
         List<DiscussPost> list =
-                discussPostService.selectDiscussPosts(0, page.getOffset(), page.getLimit());
+                discussPostService.selectDiscussPosts(0, page.getOffset(), page.getLimit(), orderMode);
 
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         if (list != null) {

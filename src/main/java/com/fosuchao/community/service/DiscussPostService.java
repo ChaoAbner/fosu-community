@@ -2,9 +2,11 @@ package com.fosuchao.community.service;
 
 import com.fosuchao.community.dao.DiscussPostMapper;
 import com.fosuchao.community.entity.DiscussPost;
+import com.fosuchao.community.utils.RedisKeyUtil;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundSetOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
@@ -25,9 +27,12 @@ public class DiscussPostService {
     @Autowired
     SensitiveFilterUtil sensitiveFilterUtil;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
     // 查询用户的post
-    public List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit) {
-        return discussPostMapper.selectDiscussPosts(userId, offset, limit);
+    public List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode) {
+        return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
     }
 
     // 查询post的总行数
@@ -43,6 +48,11 @@ public class DiscussPostService {
     // 更新评论数
     public int updateCommentCount( int id, int commentCount) {
         return discussPostMapper.updateCommentCount(id, commentCount);
+    }
+
+    // 更新帖子分数
+    public int updatePostScore(int id, double score) {
+        return discussPostMapper.updatePostScore(id, score);
     }
 
     // 修改状态,加精，置顶，热帖等
@@ -68,5 +78,17 @@ public class DiscussPostService {
         post.setTitle(sensitiveFilterUtil.filter(post.getTitle()));
 
         discussPostMapper.insertDiscussPost(post);
+    }
+
+    // 变动的帖子缓存集合，需要刷新分数
+    public void setChangePostSet(int postId) {
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(postScoreKey, postId);
+    }
+
+    // 获取缓存集合
+    public BoundSetOperations getChangePostSet() {
+        String postScoreKey = RedisKeyUtil.getPostScoreKey();
+        return redisTemplate.boundSetOps(postScoreKey);
     }
 }

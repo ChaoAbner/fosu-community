@@ -31,6 +31,8 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_DAU = "dau";
 
+    private static final String PREFIX_POST_SCORE = "post";
+
 
     /**
      * 某个实体的赞
@@ -129,5 +131,9 @@ public class RedisKeyUtil {
      */
     public static String getDauRangekey(String startDate, String endDate) {
         return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    public static String getPostScoreKey() {
+        return PREFIX_POST_SCORE + SPLIT + "score";
     }
 }

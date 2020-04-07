@@ -11,8 +11,8 @@ import java.util.List;
 public interface DiscussPostMapper {
 
     // 查询post
-    List<DiscussPost> selectDiscussPosts(@Param("userId") int userId,
-                                         @Param("offset") int offset, @Param("limit") int limit);
+    List<DiscussPost> selectDiscussPosts(@Param("userId") int userId, @Param("offset") int offset,
+                                         @Param("limit") int limit, @Param("orderMode") int orderMode);
 
     // 查询post的总行数
     int selectDiscussPostsRows(@Param("userId") int userId);
@@ -29,6 +29,9 @@ public interface DiscussPostMapper {
     // 修改状态
     int updatePostStatus(@Param("id") int id, @Param("status") int status);
 
-    // 修改文章type
+    // 修改帖子type
     int updatePostType(@Param("id") int id, @Param("type") int type);
+
+    // 修改帖子分数
+    int updatePostScore(@Param("id") int id, @Param("score") double score);
 }

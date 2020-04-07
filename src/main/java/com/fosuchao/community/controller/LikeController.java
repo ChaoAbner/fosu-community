@@ -4,6 +4,7 @@ import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.event.EventProducer;
+import com.fosuchao.community.service.DiscussPostService;
 import com.fosuchao.community.service.EventService;
 import com.fosuchao.community.service.LikeService;
 import com.fosuchao.community.utils.HostHolder;
@@ -34,6 +35,9 @@ public class LikeController implements CommunityConstant {
     @Autowired
     EventService eventService;
 
+    @Autowired
+    DiscussPostService discussPostService;
+
     /**
      * 点赞接口，TODO: 权限控制
      * @Param [entityType, entityId, entityUserId, postId]
@@ -58,6 +62,11 @@ public class LikeController implements CommunityConstant {
         // 判断点赞状态来触发点赞事件
         if (likeStatus == 1) {
             eventService.like(entityId, entityType, entityUserId, postId);
+        }
+
+        // 缓存变动帖子
+        if (entityType == POST_ENTITY) {
+            discussPostService.setChangePostSet(entityId);
         }
 
         return JsonResponseUtil.getJsonResponse(0, null, map);
