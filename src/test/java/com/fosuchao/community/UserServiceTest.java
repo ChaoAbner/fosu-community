@@ -33,7 +33,7 @@ public class UserServiceTest {
 
     @Test
     public void discussPostSelect() {
-        List<DiscussPost> discussPosts = discussPostService.selectDiscussPosts(0, 1, 10);
+        List<DiscussPost> discussPosts = discussPostService.selectDiscussPosts(0, 1, 10, 0);
         System.out.println(discussPosts);
     }
 

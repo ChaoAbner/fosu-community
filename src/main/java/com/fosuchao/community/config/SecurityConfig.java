@@ -52,6 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 .antMatchers(
                         "/user/setting",
                         "/user/upload",
+                        "/user/header/**",
+                        "/user/password",
                         "/comment/add/**",
                         "/letter/**",
                         "/notice/**",
@@ -72,9 +74,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         "/admin/**",
                         "/statistic/**"
                 ).hasAnyAuthority(AUTHORITY_ADMIN)
-                .anyRequest().permitAll()
+                .anyRequest().permitAll();
                 // 禁用csrf
-                .and().csrf().disable();
+//                .and().csrf().disable();
 
         // 当权限不够时的处理
         http.exceptionHandling()
