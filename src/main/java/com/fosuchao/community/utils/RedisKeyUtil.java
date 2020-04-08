@@ -33,6 +33,8 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_POST_SCORE = "post";
 
+    private static final String PREFIX_FORGET_CODE = "forget";
+
 
     /**
      * 某个实体的赞
@@ -133,7 +135,21 @@ public class RedisKeyUtil {
         return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
 
+    /**
+     * 获取需要修改分数的帖子集合
+     * @Param []
+     * @return java.lang.String
+     */
     public static String getPostScoreKey() {
         return PREFIX_POST_SCORE + SPLIT + "score";
+    }
+
+    /**
+     * 获取忘记密码的验证码
+     * @Param [email]
+     * @return java.lang.String
+     */
+    public static String getForgetCode(String email) {
+        return PREFIX_FORGET_CODE + SPLIT + email;
     }
 }

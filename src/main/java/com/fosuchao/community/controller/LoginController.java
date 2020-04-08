@@ -56,7 +56,7 @@ public class LoginController implements CommunityConstant{
     @GetMapping(path = "/login")
     public String loginPage(HttpServletRequest request) {
         if (hostHolder.getUser() != null) {
-            return "forward:/index";
+            return "redirect:/index";
         }
         return "/site/login";
     }
@@ -103,6 +103,10 @@ public class LoginController implements CommunityConstant{
 
     @PostMapping(path = "/register")
     public String register(User user, Model model) {
+        if (user.getUsername().contains("@")) {
+            model.addAttribute("usernameMsg", "用户名不能含有特殊符号！");
+            return "/site/register";
+        }
 
         Map<String, Object> map = userService.register(user);
 

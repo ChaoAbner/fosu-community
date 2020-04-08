@@ -39,7 +39,6 @@ public class LikeController implements CommunityConstant {
     DiscussPostService discussPostService;
 
     /**
-     * 点赞接口，TODO: 权限控制
      * @Param [entityType, entityId, entityUserId, postId]
      * @return java.lang.String
      */

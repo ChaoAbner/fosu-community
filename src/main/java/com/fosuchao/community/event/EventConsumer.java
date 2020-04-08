@@ -93,7 +93,7 @@ public class EventConsumer implements CommunityConstant{
         String email = (String) event.getData().get("email");
         String subject = (String) event.getData().get("subject");
         String content = (String) event.getData().get("content");
-        mailUtil.sendCompanyMail(email, subject, content);
+        mailUtil.sendCompanyHtmlMail(email, subject, content);
     }
 
     /**

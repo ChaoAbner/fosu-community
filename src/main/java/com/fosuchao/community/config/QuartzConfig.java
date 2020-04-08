@@ -3,16 +3,13 @@ package com.fosuchao.community.config;
 import com.fosuchao.community.quartz.PostScoreRefreshJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.SimpleTrigger;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 /**
- * @description:
+ * @description: quartz配置
  * @author: Joker Ye
  * @create: 2020/4/6 23:06
  */
@@ -43,7 +40,7 @@ public class QuartzConfig {
         triggerBean.setGroup("communityTriggerGroup");
         triggerBean.setName("postScoreRefreshTrigger");
         triggerBean.setJobDataMap(new JobDataMap());
-        triggerBean.setRepeatInterval(1000 * 60 * 5);
+        triggerBean.setRepeatInterval(1000 * 60 * 30);
         return triggerBean;
     }
 }

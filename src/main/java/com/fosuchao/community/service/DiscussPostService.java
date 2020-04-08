@@ -1,16 +1,28 @@
 package com.fosuchao.community.service;
 
+import com.fosuchao.community.cache.PostCache;
 import com.fosuchao.community.dao.DiscussPostMapper;
 import com.fosuchao.community.entity.DiscussPost;
 import com.fosuchao.community.utils.RedisKeyUtil;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -21,6 +33,8 @@ import java.util.List;
 @Service
 public class DiscussPostService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DiscussPostService.class);
+
     @Autowired
     private DiscussPostMapper discussPostMapper;
 
@@ -30,13 +44,48 @@ public class DiscussPostService {
     @Autowired
     RedisTemplate redisTemplate;
 
+    @Autowired
+    PostCache postCache;
+
+    // Caffeine核心接口: Cache, LoadingCache, AsyncLoadingCache
+
+    // 帖子列表
+    private LoadingCache<String, List<DiscussPost>> postsCache;
+
+    // 帖子行数
+    private LoadingCache<Integer, Integer> postRowsCache;
+
+    /**
+     * 初始化热门帖子的缓存
+     *
+     * @return void
+     * @Param []
+     */
+    @PostConstruct
+    public void initPostsCache() {
+        // 初始化帖子列表缓存的方式
+        postsCache = postCache.postListLoad();
+
+        // 初始化帖子行数的方式
+        postRowsCache = postCache.postRowsLoad();
+    }
+
     // 查询用户的post
     public List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode) {
+        if (userId == 0 && orderMode == 1) {
+            // 走缓存
+            String key = offset + ":" + limit;
+            return postsCache.get(key);
+        }
         return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
     }
 
     // 查询post的总行数
     public int selectDiscussPostsRows(int userId) {
+        if (userId == 0) {
+            // 走缓存
+            return postRowsCache.get(userId);
+        }
         return discussPostMapper.selectDiscussPostsRows(userId);
     }
 
@@ -46,7 +95,7 @@ public class DiscussPostService {
     }
 
     // 更新评论数
-    public int updateCommentCount( int id, int commentCount) {
+    public int updateCommentCount(int id, int commentCount) {
         return discussPostMapper.updateCommentCount(id, commentCount);
     }
 

@@ -84,11 +84,11 @@ public class EventService implements CommunityConstant{
         eventProducer.fireEvent(event);
     }
 
-    public void email(String to, String Subject, String content) {
+    public void email(String to, String subject, String content) {
         Event event = new Event();
         event.setTopic(EMAIL_TOPIC);
         event.setData("email", to);
-        event.setData("subject", Subject);
+        event.setData("subject", subject);
         event.setData("content", content);
         eventProducer.fireEvent(event);
     }

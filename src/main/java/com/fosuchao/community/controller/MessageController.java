@@ -16,10 +16,7 @@ import org.apache.kafka.common.internals.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.*;
@@ -130,6 +127,7 @@ public class MessageController implements CommunityConstant {
     }
 
     @PostMapping("/letter/send")
+    @ResponseBody
     public String sendMessage(String toName, String content) {
         User toUser = userService.selectByName(toName);
         if (toUser == null) {

@@ -46,7 +46,7 @@ public class DiscussPostController implements CommunityConstant {
     EventService eventService;
 
     /**
-     * 添加文章 TODO: 权限控制
+     * 添加文章
      * @return java.lang.String
      * @Param [title, content]
      */
@@ -167,28 +167,28 @@ public class DiscussPostController implements CommunityConstant {
     }
 
     /**
-     * 置顶，type = 1
+     * 置顶，type = 1, 取消置顶
      * @Param [id]
      * @return java.lang.String
      */
     @PostMapping("/top")
     @ResponseBody
-    public String setTop(int id) {
-        discussPostService.updatePostType(id, 1);
+    public String setTop(int id, int type) {
+        discussPostService.updatePostType(id, type);
 
         // 触发发帖事件
         return JsonResponseUtil.getJsonResponse(0);
     }
 
     /**
-     * 加精，status = 1
+     * 加精，status = 1， 取消加精
      * @Param [id]
      * @return java.lang.String
      */
     @PostMapping("/wonderful")
     @ResponseBody
-    public String setWonderful(int id) {
-        discussPostService.updatePostStatus(id, 1);
+    public String setWonderful(int id, int status) {
+        discussPostService.updatePostStatus(id, status);
 
         // 触发发帖事件
         eventService.publishPost(discussPostService.selectDiscussPostById(id));

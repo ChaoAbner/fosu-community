@@ -44,7 +44,6 @@ public class FollowController implements CommunityConstant {
     EventService eventService;
 
     /**
-     * TODO: 权限控制
      * @Param [entityType, entityId]
      * @return java.lang.String
      */

@@ -42,7 +42,6 @@ public class CommentController implements CommunityConstant {
     EventService eventService;
 
     /**
-     * TODO: 权限控制
      * @Param [postId, comment]
      * @return java.lang.String
      */

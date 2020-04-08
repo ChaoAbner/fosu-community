@@ -2,11 +2,9 @@ package com.fosuchao.community.quartz;
 
 import com.fosuchao.community.constant.CommunityConstant;
 import com.fosuchao.community.entity.DiscussPost;
-import com.fosuchao.community.service.CommentService;
 import com.fosuchao.community.service.DiscussPostService;
 import com.fosuchao.community.service.ElasticsearchService;
 import com.fosuchao.community.service.LikeService;
-import com.fosuchao.community.utils.RedisKeyUtil;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -53,7 +51,7 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         BoundSetOperations operations = discussPostService.getChangePostSet();
 
-        if (operations == null && operations.size() == 0) {
+        if (operations == null || operations.size() == 0) {
             logger.info("[任务结束]: 没有需要刷新分数的帖子");
             return ;
         }

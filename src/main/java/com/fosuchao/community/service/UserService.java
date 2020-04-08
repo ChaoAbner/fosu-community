@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Service
-public class UserService implements CommunityConstant{
+public class UserService implements CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;
@@ -82,6 +83,7 @@ public class UserService implements CommunityConstant{
     }
 
     public int updatePassword(int id, String password) {
+        clearUserCache(id);
         return userMapper.updatePassword(id, password);
     }
 
@@ -143,22 +145,13 @@ public class UserService implements CommunityConstant{
                 append(user.getId()).append("/").append(user.getActivationCode());
 
         Context context = new Context();
-        // TODO 模板设置username
+
         context.setVariable("username", user.getUsername());
         context.setVariable("url", url.toString());
 
         String content = templateEngine.process("mail/activation", context);
         // 异步队列发送邮件
-//        Event event = new Event();
-//        event.setTopic(EMAIL_TOPIC);
-//        event.setData("email", user.getEmail());
-//        event.setData("subject", "激活账号");
-//        event.setData("content", content);
-//        eventProducer.fireEvent(event);
         eventService.email(user.getEmail(), "激活账号", content);
-
-//        mailUtil.sendMail(user.getEmail(), "激活账号", content);
-
         return map;
     }
 
@@ -189,7 +182,14 @@ public class UserService implements CommunityConstant{
             map.put("passwordMsg", "密码不能为空!");
             return map;
         }
-        User user = userMapper.selectByName(username);
+        // 支持用户名或邮箱登录
+        User user;
+        if (username.contains("@")) {
+            user = userMapper.selectByEmail(username);
+        } else {
+            user = userMapper.selectByName(username);
+        }
+
         if (user == null) {
             // 用户不存在
             map.put("usernameMsg", "该账号不存在!");
@@ -238,6 +238,8 @@ public class UserService implements CommunityConstant{
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(key);
         loginTicket.setStatus(1);
         redisTemplate.opsForValue().set(key, loginTicket);
+        // 清除权限
+        SecurityContextHolder.clearContext();
     }
 
     // 从缓存中取用户

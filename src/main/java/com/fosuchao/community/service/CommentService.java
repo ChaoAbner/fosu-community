@@ -49,4 +49,12 @@ public class CommentService {
     public Comment selectById(int id) {
         return commentMapper.selectById(id);
     }
+
+    public int selectCountByUserId(int userId) {
+        return commentMapper.selectCountByUserId(userId);
+    }
+
+    public List<Comment> selectCommentsByUserId(int userId, int offset, int limit) {
+        return commentMapper.selectCommentsByUserId(userId, offset, limit);
+    }
 }
