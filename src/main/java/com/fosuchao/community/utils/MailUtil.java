@@ -46,7 +46,7 @@ public class MailUtil {
     private String protocol;
 
     /**
-     * 普通邮件发送
+     * 发送普通邮件
      * @Param [to, subject, content]
      * @return void
      */
@@ -66,11 +66,24 @@ public class MailUtil {
     }
 
     /**
+     * 发送html邮件
+     * @Param [to, subject, content]
+     * @return void
+     */
+    public void sendCompanyHtmlMail(String to, String subject, String content) {
+        sendCompanyMail(to, subject, content, 1);
+    }
+
+    public void sendCompanyMail(String to, String subject, String content) {
+        sendCompanyMail(to, subject, content, 0);
+    }
+
+    /**
      * 企业邮箱发送，需要配置ssl
      * @Param [to, subject, content]
      * @return void
      */
-    public void sendCompanyMail(String to, String subject, String content) {
+    public void sendCompanyMail(String to, String subject, String content, int type) {
         Properties prop = new Properties();
         prop.setProperty("mail.transport.protocol", protocol);
         prop.setProperty("mail.smtp.host", host);
@@ -95,7 +108,13 @@ public class MailUtil {
             mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             mimeMessage.setSubject(subject);
             mimeMessage.setSentDate(new Date());
-            mimeMessage.setText(content);
+            if (type == 1) {
+                // html
+                mimeMessage.setContent(content, "text/html;charset=utf-8");
+            } else {
+                // text
+                mimeMessage.setText(content);
+            }
             mimeMessage.saveChanges();
             Transport.send(mimeMessage);
         } catch (MessagingException | UnsupportedEncodingException e) {
