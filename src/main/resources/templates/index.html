@@ -21,7 +21,7 @@
 				<!-- 导航 -->
 				<nav class="navbar navbar-expand-lg navbar-dark">
 					<!-- logo -->
-					<a class="navbar-brand" href="#"></a>
+					<a class="navbar-brand" th:href="@{/index}"></a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
@@ -167,12 +167,12 @@
 		</div>
 
 		<!-- 尾部 -->
-		<footer class="bg-dark">
+		<footer class="bg-dark" th:fragment="footer">
 			<div class="container">
 				<div class="row">
 					<!-- 二维码 -->
 					<div class="col-4 qrcode">
-						<img src="https://uploadfiles.nowcoder.com/app/app_download.png" class="img-thumbnail" style="width:136px;" />
+						<img src="http://img.fosuchao.com/20200408150736.png" class="img-thumbnail" style="width:136px;" />
 					</div>
 					<!-- 公司信息 -->
 					<div class="col-8 detail-info">
@@ -180,25 +180,7 @@
 							<div class="col">
 								<ul class="nav">
 									<li class="nav-item">
-										<a class="nav-link text-light" href="#">关于我们</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">加入我们</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">意见反馈</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">企业服务</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">联系我们</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">免责声明</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link text-light" href="#">友情链接</a>
+										<a class="nav-link text-light" href="https://www.fosuchao.com">关于我</a>
 									</li>
 								</ul>
 							</div>
@@ -207,18 +189,16 @@
 							<div class="col">
 								<ul class="nav btn-group-vertical company-info">
 									<li class="nav-item text-white-50">
-										公司地址：北京市朝阳区大屯路东金泉时代3-2708北京牛客科技有限公司
+										地址：Foshan university
 									</li>
 									<li class="nav-item text-white-50">
-										联系方式：010-60728802(电话)&nbsp;&nbsp;&nbsp;&nbsp;admin@nowcoder.com
+										联系方式：yc2473109110 （wechat） &nbsp;&nbsp;&nbsp;&nbsp;yc@fosuchao.com
 									</li>
 									<li class="nav-item text-white-50">
-										牛客科技©2018 All rights reserved
+										©2018-2020 All rights reserved
 									</li>
 									<li class="nav-item text-white-50">
-										京ICP备14055008号-4 &nbsp;&nbsp;&nbsp;&nbsp;
-										<img src="http://static.nowcoder.com/company/images/res/ghs.png" style="width:18px;" />
-										京公网安备 11010502036488号
+										<a class="text-light" href="http://www.beian.miit.gov.cn/">粤ICP备18121990号</a>
 									</li>
 								</ul>
 							</div>
