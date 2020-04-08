@@ -19,8 +19,14 @@
         <if test="userId!=0">
             and user_id = #{userId}
         </if>
-        order by type desc, create_time desc
-        limit #{offset}, #{limit}
+        <if test="orderMode==0">
+            order by type desc, create_time desc
+            limit #{offset}, #{limit}
+        </if>
+        <if test="orderMode==1">
+            order by type desc, score desc, create_time desc
+            limit #{offset}, #{limit}
+        </if>
     </select>
 
     <select id="selectDiscussPostsRows" resultType="int">
@@ -32,7 +38,7 @@
         </if>
     </select>
 
-    <insert id="insertDiscussPost" parameterType="DiscussPost">
+    <insert id="insertDiscussPost" parameterType="DiscussPost" keyProperty="id">
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
     </insert>
@@ -47,4 +53,15 @@
         update discuss_post set comment_count = #{commentCount} where id = #{id}
     </update>
 
+    <update id="updatePostStatus">
+        update discuss_post set status = #{status} where id = #{id}
+    </update>
+
+    <update id="updatePostType">
+        update discuss_post set type = #{type} where id = #{id}
+    </update>
+
+    <update id="updatePostScore">
+        update discuss_post set score = #{score} where id = #{id}
+    </update>
 </mapper>

@@ -35,4 +35,26 @@
         values(#{userId},#{entityType},#{entityId},#{targetId},#{content},#{status},#{createTime})
     </insert>
 
+    <select id="selectById" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where id = #{id}
+    </select>
+
+    <select id="selectCountByUserId" resultType="int">
+        select count(id)
+        from comment
+        where user_id = #{userId}
+        and status = 0
+    </select>
+
+    <select id="selectCommentsByUserId" resultType="Comment">
+        select <include refid="selectFields"></include>
+        from comment
+        where user_id = #{userId}
+        and status = 0
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+
 </mapper>

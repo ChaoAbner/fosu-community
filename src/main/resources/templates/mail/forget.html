@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="http://img.fosuchao.com/logo.png"/>
+    <title>忘记密码</title>
+</head>
+<body>
+	<div>
+		<p>
+			<b th:text="${email}">xxx@xxx.com</b>, 您好!
+		</p>
+		<p>
+			您正在找回fosuhub账号的密码, 本次操作的验证码为 <b style="color: #ff6547" th:text="${code}">u5s6dt</b> ,
+			有效时间5分钟, 请您及时进行操作!
+		</p>
+		<p>若不是本人操作，请忽略</p>
+	</div>
+</body>
+</html>
