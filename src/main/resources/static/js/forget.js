@@ -75,11 +75,11 @@ function changePass() {
         return;
     }
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
     $.post(
         CONTEXT_PATH + "/user/forget/check",
         {"email": email, "code": verifycode, "newPassword": password},

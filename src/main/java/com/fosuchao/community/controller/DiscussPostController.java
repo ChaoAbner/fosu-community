@@ -85,7 +85,7 @@ public class DiscussPostController implements CommunityConstant {
     @GetMapping("/detail/{id}")
     public String selectDiscussDetail(@PathVariable("id") int id, Model model, Page page) {
         DiscussPost post = discussPostService.selectDiscussPostById(id);
-        if (post == null) {
+        if (post == null || post.getStatus() == 2) {
             return JsonResponseUtil.getJsonResponse(400, "该帖子不存在");
         }
         model.addAttribute("post", post);
@@ -177,6 +177,7 @@ public class DiscussPostController implements CommunityConstant {
         discussPostService.updatePostType(id, type);
 
         // 触发发帖事件
+        eventService.publishPost(discussPostService.selectDiscussPostById(id));
         return JsonResponseUtil.getJsonResponse(0);
     }
 

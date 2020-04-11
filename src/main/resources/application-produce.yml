@@ -1,0 +1,120 @@
+# spring
+spring:
+  # devtools
+  devtools:
+    restart:
+      enabled: true
+  # redis
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+  # taskExecution
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+    # scheduling
+    scheduling:
+      pool:
+        size: 5
+  # quartz
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communitySchedeler
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+  # thymeleaf
+  thymeleaf:
+    cache: true
+  # datasource
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/community?characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong
+    username: root
+    password: Fosuchao_666
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
+  # mail
+  mail:
+    #    host: smtp.qq.com
+    host: smtp.exmail.qq.com
+    #    username: xxx@qq.com
+    username: system@fosuchao.com
+    #    password: xluengejgzdeebhj
+    password: GiWqLFJWL7WiZAN2
+    default-encoding: utf-8
+    port: 465
+    protocol: smtp
+  # kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: community-consumer-group
+      enable-auto-commit: true
+      auto-commit-interval: 3000
+  # es
+  data:
+    elasticsearch:
+      cluster-name: community
+      cluster-nodes: 127.0.0.1:9300
+
+server:
+  port: 8899
+  servlet:
+    context-path:
+
+# mybatis
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.fosuchao.community.entity
+  configuration:
+    use-generated-keys: true
+    map-underscore-to-camel-case: true
+
+# logger
+logging:
+  level:
+    com:
+      fosuchao:
+        community: debug
+  file:
+    path: /tmp/work/data/fosuchao/community.log
+
+# community
+community:
+  path:
+    domain: http://hub.fosuchao.com
+    upload: /tmp/work/data/upload
+    sensitive: classpath:sensitive-words.txt
+
+
+# qiniu
+qiniu:
+  key:
+    access: kllOMCt2hi_YykRIKf5vpJLn7kyzVm0h0-MQEnOq
+    secret: diQFjAae7S75MPU0wJb7-_UfBRLCAAs-TYohM4WS
+  bucket:
+    header: fosu-community-header
+    url: http://cheader.fosuchao.com
+
+# caffeine
+caffeine:
+  post:
+    max-size: 15
+    expire-seconds: 180

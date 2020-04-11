@@ -83,6 +83,11 @@ public interface CommunityConstant {
     int SYSTEM_USER_ID = 1;
 
     /**
+     * 官方用户
+     */
+    int OFFICIAL_USER_ID = 150;
+
+    /**
      * 权限：普通用户
      */
     String AUTHORITY_USER = "user";

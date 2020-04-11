@@ -6,7 +6,6 @@ import com.fosuchao.community.entity.DiscussPost;
 import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.utils.HostHolder;
-import org.apache.catalina.Host;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -5,6 +5,7 @@ import com.fosuchao.community.dao.LoginTicketMapper;
 import com.fosuchao.community.dao.UserMapper;
 import com.fosuchao.community.entity.Event;
 import com.fosuchao.community.entity.LoginTicket;
+import com.fosuchao.community.entity.Message;
 import com.fosuchao.community.entity.User;
 import com.fosuchao.community.event.EventProducer;
 import com.fosuchao.community.utils.CommunityUtil;
@@ -49,6 +50,9 @@ public class UserService implements CommunityConstant {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Autowired
     private MailUtil mailUtil;
@@ -152,6 +156,21 @@ public class UserService implements CommunityConstant {
         String content = templateEngine.process("mail/activation", context);
         // 异步队列发送邮件
         eventService.email(user.getEmail(), "激活账号", content);
+
+        // 插入欢迎消息
+        Message message = new Message();
+        message.setFromId(OFFICIAL_USER_ID);
+        message.setToId(user.getId());
+        message.setContent(user.getUsername() + "，欢迎您注册Fosuhub社区。您可以在这里获取您想要的校园信息。" +
+                "也可以发布您的想法或者有价值的信息，以助于校内学生的相互交流！");
+        message.setCreateTime(new Date());
+        if (user.getId() > OFFICIAL_USER_ID) {
+            message.setConversationId(OFFICIAL_USER_ID + "_" + user.getId());
+        } else {
+            message.setConversationId(user.getId() + "_" + OFFICIAL_USER_ID);
+        }
+
+        messageService.insertLetter(message);
         return map;
     }
 

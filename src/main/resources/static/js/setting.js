@@ -5,11 +5,11 @@ $(function(){
 
 function upload() {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
     $.ajax({
         url: "http://upload-z2.qiniup.com",
         method: "post",
@@ -55,11 +55,11 @@ function changePass() {
         alert("密码长度至少为6位！");
         return;
     }
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
     $.post(
         CONTEXT_PATH + "/user/password",
         {"sourcePass": oldPwd,"newPass":confirmPwd},

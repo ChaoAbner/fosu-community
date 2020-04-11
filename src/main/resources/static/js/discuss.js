@@ -14,11 +14,11 @@ function reload() {
 
 function like(btn, entityType, entityId, entityUserId, postId) {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
 
     $.post(
         CONTEXT_PATH + "/like",
@@ -38,11 +38,11 @@ function like(btn, entityType, entityId, entityUserId, postId) {
 // 置顶
 function setTop() {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
 
     $.post(
         CONTEXT_PATH + "/discuss/top",
@@ -61,11 +61,11 @@ function setTop() {
 
 function cancelTop() {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
 
     $.post(
         CONTEXT_PATH + "/discuss/top",
@@ -85,11 +85,11 @@ function cancelTop() {
 // 加精
 function setWonderful() {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
 
     $.post(
         CONTEXT_PATH + "/discuss/wonderful",
@@ -110,11 +110,11 @@ function setWonderful() {
 // 取消加精
 function cancelWonderful() {
     // 发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options){
-        xhr.setRequestHeader(header, token);
-    });
+    // var token = $("meta[name='_csrf']").attr("content");
+    // var header = $("meta[name='_csrf_header']").attr("content");
+    // $(document).ajaxSend(function(e, xhr, options){
+    //     xhr.setRequestHeader(header, token);
+    // });
 
     $.post(
         CONTEXT_PATH + "/discuss/wonderful",

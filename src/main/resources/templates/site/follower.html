@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<!--访问该页面时,在此处生成CSRF令牌.-->
-	<meta name="_csrf" th:content="${_csrf.token}">
-	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	<!-- <meta name="_csrf" th:content="${_csrf.token}">-->
+	<!-- <meta name="_csrf_header" th:content="${_csrf.headerName}">-->
 	<link rel="icon" href="http://img.fosuchao.com/logo.png"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" th:href="@{/css/global.css}" />
@@ -69,12 +69,12 @@
 					<ul class="nav nav-tabs mb-3">
 						<li class="nav-item">
 							<a class="nav-link position-relative" th:href="@{|/followees/${user.id}|}">
-								<i class="text-info" th:utext="${user.username}">Nowcoder</i> 关注的人
+								<i class="text-info" th:utext="${user.username}">Nowcoder</i> 的关注
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link position-relative active" th:href="@{|/followers/${user.id}|}">
-								关注 <i class="text-info" th:utext="${user.username}">Nowcoder</i> 的人
+                                <i class="text-info" th:utext="${user.username}">Nowcoder</i> 的粉丝
 							</a>
 						</li>
 					</ul>

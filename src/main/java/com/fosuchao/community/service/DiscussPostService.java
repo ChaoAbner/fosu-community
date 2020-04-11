@@ -2,6 +2,7 @@ package com.fosuchao.community.service;
 
 import com.fosuchao.community.cache.PostCache;
 import com.fosuchao.community.dao.DiscussPostMapper;
+import com.fosuchao.community.dao.es.DiscussPostRepository;
 import com.fosuchao.community.entity.DiscussPost;
 import com.fosuchao.community.utils.RedisKeyUtil;
 import com.fosuchao.community.utils.SensitiveFilterUtil;
@@ -39,13 +40,16 @@ public class DiscussPostService {
     private DiscussPostMapper discussPostMapper;
 
     @Autowired
-    SensitiveFilterUtil sensitiveFilterUtil;
+    private SensitiveFilterUtil sensitiveFilterUtil;
 
     @Autowired
-    RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Autowired
-    PostCache postCache;
+    private DiscussPostRepository discussPostRepository;
+
+    @Autowired
+    private PostCache postCache;
 
     // Caffeine核心接口: Cache, LoadingCache, AsyncLoadingCache
 
@@ -139,5 +143,10 @@ public class DiscussPostService {
     public BoundSetOperations getChangePostSet() {
         String postScoreKey = RedisKeyUtil.getPostScoreKey();
         return redisTemplate.boundSetOps(postScoreKey);
+    }
+
+    // 设置所有帖子索引
+    public void createAllPostsIndex() {
+        discussPostRepository.saveAll(selectDiscussPosts(0, 0, 500, 0));
     }
 }

@@ -40,7 +40,7 @@ public class QuartzConfig {
         triggerBean.setGroup("communityTriggerGroup");
         triggerBean.setName("postScoreRefreshTrigger");
         triggerBean.setJobDataMap(new JobDataMap());
-        triggerBean.setRepeatInterval(1000 * 60 * 30);
+        triggerBean.setRepeatInterval(1000 * 60 * 5);   // 5分钟定时
         return triggerBean;
     }
 }

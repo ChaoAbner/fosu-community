@@ -1,11 +1,11 @@
 package com.fosuchao.community.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpRequest;
+//import java.net.http.HttpRequest;
 import java.util.UUID;
 
 /**

@@ -86,7 +86,7 @@ public class FollowController implements CommunityConstant {
             }
         }
         model.addAttribute("users", followers);
-        model.addAttribute("user", hostHolder.getUser());
+        model.addAttribute("user", user);
 
         return "/site/follower";
     }
@@ -111,7 +111,7 @@ public class FollowController implements CommunityConstant {
             }
         }
         model.addAttribute("users", followees);
-        model.addAttribute("user", hostHolder.getUser());
+        model.addAttribute("user", user);
 
         return "/site/followee";
     }
