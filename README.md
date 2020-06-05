@@ -7,6 +7,7 @@
 - Elasticsearch实现搜索引擎。
 
 ---
+[更多介绍](https://github.com/ChaoAbner/fosu-community/tree/master/docs)
 
 **功能**
 
